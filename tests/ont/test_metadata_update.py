@@ -185,6 +185,7 @@ class TestONTMetadataCreation(object):
             AVU(TrackedSample.NAME, "name1"),
             AVU(TrackedSample.SUPPLIER_NAME, "supplier_name1"),
             AVU(TrackedSample.PUBLIC_NAME, "public_name1"),
+            AVU(TrackedSample.UUID, "62429892-0ab6-11ee-b5ba-fa163eac3af1"),
             AVU(TrackedStudy.ID, "2000"),
             AVU(TrackedStudy.NAME, "Study Y"),
         ]:
@@ -249,6 +250,7 @@ class TestONTMetadataCreation(object):
                     AVU(TrackedSample.NAME, f"name{tag_index}"),
                     AVU(TrackedSample.PUBLIC_NAME, f"public_name{tag_index}"),
                     AVU(TrackedSample.SUPPLIER_NAME, f"supplier_name{tag_index}"),
+                    AVU(TrackedSample.UUID, f"62429892-0ab6-11ee-b5ba-fa163eac3af{tag_index}"),
                     AVU(TrackedStudy.ID, "3000"),
                     AVU(TrackedStudy.NAME, "Study Z"),
                 ]:
@@ -316,6 +318,7 @@ class TestONTMetadataCreation(object):
                     AVU(TrackedSample.NAME, f"name{tag_index}"),
                     AVU(TrackedSample.PUBLIC_NAME, f"public_name{tag_index}"),
                     AVU(TrackedSample.SUPPLIER_NAME, f"supplier_name{tag_index}"),
+                    AVU(TrackedSample.UUID, f"62429892-0ab6-11ee-b5ba-fa163eac3af{tag_index}"),
                     AVU(TrackedStudy.ID, "3000"),
                     AVU(TrackedStudy.NAME, "Study Z"),
                 ]:
