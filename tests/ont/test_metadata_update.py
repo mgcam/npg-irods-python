@@ -248,11 +248,14 @@ class TestONTMetadataCreation(object):
                     AVU(TrackedSample.COMMON_NAME, f"common_name{tag_index}"),
                     AVU(TrackedSample.DONOR_ID, f"donor_id{tag_index}"),
                     AVU(TrackedSample.ID, f"id_sample_lims{tag_index}"),
-                    AVU(TrackedSample.LIMS, "LIMS_01"),                    
+                    AVU(TrackedSample.LIMS, "LIMS_01"),
                     AVU(TrackedSample.NAME, f"name{tag_index}"),
                     AVU(TrackedSample.PUBLIC_NAME, f"public_name{tag_index}"),
                     AVU(TrackedSample.SUPPLIER_NAME, f"supplier_name{tag_index}"),
-                    AVU(TrackedSample.UUID, f"62429892-0ab6-11ee-b5ba-fa163eac3af{tag_index}"),
+                    AVU(
+                        TrackedSample.UUID,
+                        f"62429892-0ab6-11ee-b5ba-fa163eac3af{tag_index}",
+                    ),
                     AVU(TrackedStudy.ID, "3000"),
                     AVU(TrackedStudy.NAME, "Study Z"),
                 ]:
@@ -321,7 +324,10 @@ class TestONTMetadataCreation(object):
                     AVU(TrackedSample.NAME, f"name{tag_index}"),
                     AVU(TrackedSample.PUBLIC_NAME, f"public_name{tag_index}"),
                     AVU(TrackedSample.SUPPLIER_NAME, f"supplier_name{tag_index}"),
-                    AVU(TrackedSample.UUID, f"62429892-0ab6-11ee-b5ba-fa163eac3af{tag_index}"),
+                    AVU(
+                        TrackedSample.UUID,
+                        f"62429892-0ab6-11ee-b5ba-fa163eac3af{tag_index}",
+                    ),
                     AVU(TrackedStudy.ID, "3000"),
                     AVU(TrackedStudy.NAME, "Study Z"),
                 ]:
