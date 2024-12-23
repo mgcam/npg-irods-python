@@ -39,7 +39,9 @@ from npg_irods.metadata import ont
 # Counts of test fixture experiments
 NUM_SIMPLE_EXPTS = 5
 NUM_MULTIPLEXED_EXPTS = 3
+NUM_PLEXED_REBASECALLED_EXPTS = 1
 NUM_INSTRUMENT_SLOTS = 5
+NUM_PLEXED_REBASECALLED_SLOTS = 1
 
 
 def ont_tag_identifier(tag_index: int) -> str:
@@ -86,7 +88,7 @@ def initialize_mlwh_ont_synthetic(session: Session):
             name=f"name{n}",
             public_name=f"public_name{n}",
             supplier_name=f"supplier_name{n}",
-            uuid_sample_lims=f"62429892-0ab6-11ee-b5ba-fa163eac3af{n}",
+            uuid_sample_lims=f"62429892-0ab6-11ee-b5ba-fa163eac3{n:0>3}",
             **default_timestamps,
         )
 
@@ -109,7 +111,31 @@ def initialize_mlwh_ont_synthetic(session: Session):
             recorded_at=when,
         )
 
-    num_samples = 200
+    barcodes = [
+        "CACAAAGACACCGACAACTTTCTT",
+        "ACAGACGACTACAAACGGAATCGA",
+        "CCTGGTAACTGGGACACAAGACTC",
+        "TAGGGAAACACGATAGAATCCGAA",
+        "AAGGTTACACAAACCCTGGACAAG",
+        "GACTACTTTCTGCCTTTGCGAGAA",
+        "AAGGATTCATTCCCACGGTAACAC",
+        "ACGTAACTTGGTTTGTTCCCTGAA",
+        "AACCAAGACTCGCTGTGCCTAGTT",
+        "GAGAGGACAAAGGTTTCAACGCTT",
+        "TCCATTCCCTCCGATAGATGAAAC",
+        "TCCGATTCTGCTTCTTTCTACCTG",
+    ]
+    barcodes_number = len(barcodes)
+    num_samples = (
+        (NUM_SIMPLE_EXPTS * NUM_INSTRUMENT_SLOTS)
+        + (NUM_MULTIPLEXED_EXPTS * NUM_INSTRUMENT_SLOTS * barcodes_number)
+        + (
+            NUM_PLEXED_REBASECALLED_EXPTS
+            * NUM_PLEXED_REBASECALLED_SLOTS
+            * barcodes_number
+            * 2
+        )
+    )
     samples = [make_sample(n) for n in range(1, num_samples + 1)]
     session.add_all(samples)
 
@@ -119,7 +145,7 @@ def initialize_mlwh_ont_synthetic(session: Session):
     for expt in range(1, NUM_SIMPLE_EXPTS + 1):
         for slot in range(1, NUM_INSTRUMENT_SLOTS + 1):
             flowcells.append(make_simple_flowcell(expt, slot, sample_idx))
-        sample_idx += 1
+            sample_idx += 1
 
     def make_mplex_flowcell(ex_name, ex_n, fc_start, sl, tid, bc, n):
         """Make a multiplexed flowcell given an experiment name, experiment number,
@@ -148,22 +174,6 @@ def initialize_mlwh_ont_synthetic(session: Session):
             recorded_at=when,
         )
 
-    barcodes = [
-        "CACAAAGACACCGACAACTTTCTT",
-        "ACAGACGACTACAAACGGAATCGA",
-        "CCTGGTAACTGGGACACAAGACTC",
-        "TAGGGAAACACGATAGAATCCGAA",
-        "AAGGTTACACAAACCCTGGACAAG",
-        "GACTACTTTCTGCCTTTGCGAGAA",
-        "AAGGATTCATTCCCACGGTAACAC",
-        "ACGTAACTTGGTTTGTTCCCTGAA",
-        "AACCAAGACTCGCTGTGCCTAGTT",
-        "GAGAGGACAAAGGTTTCAACGCTT",
-        "TCCATTCCCTCCGATAGATGAAAC",
-        "TCCGATTCTGCTTCTTTCTACCTG",
-    ]
-
-    msample_idx = 0
     for expt in range(1, NUM_MULTIPLEXED_EXPTS + 1):
         for slot in range(1, NUM_INSTRUMENT_SLOTS + 1):
             for barcode_idx, barcode in enumerate(barcodes):
@@ -179,39 +189,44 @@ def initialize_mlwh_ont_synthetic(session: Session):
                         slot,
                         tag_id,
                         barcode,
-                        msample_idx,
+                        sample_idx,
                     )
                 )
-                msample_idx += 1
+                sample_idx += 1
 
-    msample_idx = 0
-    for expt in range(1, 2):
-        for slot in range(1, 2):
+    for expt in range(1, NUM_PLEXED_REBASECALLED_EXPTS + 1):
+        for slot in range(1, NUM_PLEXED_REBASECALLED_SLOTS + 1):
             for barcode_idx, barcode in enumerate(barcodes[:4]):
                 tag_id = ont_tag_identifier(barcode_idx + 1)
-                flowcells.extend(
-                    [
-                        make_mplex_flowcell(
-                            "old_rebasecalled_multiplexed_experiment",
-                            expt,
-                            200,
-                            slot,
-                            tag_id,
-                            barcode,
-                            msample_idx,
-                        ),
-                        make_mplex_flowcell(
-                            "rebasecalled_multiplexed_experiment",
-                            expt,
-                            300,
-                            slot,
-                            tag_id,
-                            barcode,
-                            msample_idx,
-                        ),
-                    ]
+                flowcells.append(
+                    make_mplex_flowcell(
+                        "old_rebasecalled_multiplexed_experiment",
+                        expt,
+                        200,
+                        slot,
+                        tag_id,
+                        barcode,
+                        sample_idx,
+                    )
                 )
-                msample_idx += 1
+                sample_idx += 1
+
+    for expt in range(1, NUM_PLEXED_REBASECALLED_EXPTS + 1):
+        for slot in range(1, NUM_PLEXED_REBASECALLED_SLOTS + 1):
+            for barcode_idx, barcode in enumerate(barcodes[:4]):
+                tag_id = ont_tag_identifier(barcode_idx + 1)
+                flowcells.append(
+                    make_mplex_flowcell(
+                        "rebasecalled_multiplexed_experiment",
+                        expt,
+                        300,
+                        slot,
+                        tag_id,
+                        barcode,
+                        sample_idx,
+                    ),
+                )
+                sample_idx += 1
 
     session.add_all(flowcells)  # Simple and multiplexed
     session.commit()
